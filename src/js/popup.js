@@ -14,22 +14,30 @@
     $.closePopup();
 
     popup = $(popup);
+    popup.show();
+    popup.width();
     popup.addClass("weui-popup-container-visible");
     var modal = popup.find(".weui-popup-modal");
     modal.width();
-    modal.addClass("weui-popup-modal-visible");
+    modal.transitionEnd(function() {
+      modal.trigger("open");
+    });
   }
 
 
   $.closePopup = function(container, remove) {
-    $(".weui-popup-modal-visible").removeClass("weui-popup-modal-visible").transitionEnd(function() {
-      $(this).parent().removeClass("weui-popup-container-visible");
-      remove && $(this).parent().remove();
-    }).trigger("close");
+    container = $(container || ".weui-popup-container-visible");
+    container.find('.weui-popup-modal').transitionEnd(function() {
+      var $this = $(this);
+      $this.trigger("close");
+      container.hide();
+      remove && container.remove();
+    })
+    container.removeClass("weui-popup-container-visible")
   };
 
 
-  $(document).on("click", ".close-popup", function() {
+  $(document).on("click", ".close-popup, .weui-popup-overlay", function() {
     $.closePopup();
   })
   .on("click", ".open-popup", function() {
